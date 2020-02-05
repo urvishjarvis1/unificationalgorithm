@@ -23,12 +23,20 @@ public class AI_Assignment_1 {
 
         String[] splitedexper = exper1.split("(?)", -1);
         for (String character : splitedexper) {
-            expression1.push(character.charAt(0));
+            System.out.println(character);
+            char[] chars=new char[100];
+            character.getChars(0, character.length(), chars, 0);
+            for(char c:chars)
+            expression1.push(c);
         }
 
         splitedexper = exper2.split("(?)", -1);
         for (String character : splitedexper) {
-            expression2.push(character.charAt(0));
+            System.out.println(character);
+            char[] chars=new char[100];
+            character.getChars(0, character.length(), chars, 0);
+            for(char c:chars)
+            expression2.push(c);
         }
     }
 
@@ -85,7 +93,12 @@ public class AI_Assignment_1 {
         //String[] expr1=saparateExpression(exper1);
         //String[] expr2=saparateExpression(exper2);
         //boolean ans=ai.unification(expr1, expr2);
-        System.out.println("The ans of unification is:1: " + ai.noOfArgument(exper1) + " 2:" + ai.noOfArgument(exper2));
+        ai.saparateExpressions(exper1,exper2);
+        System.out.println("The ans of unification is: "+ai.unification());
+        System.out.println("Solutions:\n");
+        for (Map.Entry<Character, String> entry : ai.resultMap.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
     }
 
     private boolean unification() {
