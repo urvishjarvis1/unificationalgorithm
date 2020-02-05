@@ -135,7 +135,7 @@ public class AI_Assignment_1 {
                         tempValue=tempValue+expression2.pop();
                     }
                 }
-                resultMap.put(expression1.pop(),tempValue);tempValue
+                resultMap.put(expression1.pop(),tempValue);
                 
                 
             default:
