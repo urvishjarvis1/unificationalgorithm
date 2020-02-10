@@ -20,6 +20,7 @@ public class AI_Assignment_1 {
 
     public Stack<Character> expression1, expression2;
     public Map<String, String> resultMap;
+    boolean failed_due_to_occurance=false,failed_due_to_syntax=false;
 
     private void saparateExpressions(String exper1, String exper2) {
 
@@ -63,39 +64,7 @@ public class AI_Assignment_1 {
         this.expression2 = new Stack<>();
     }
 
-    /**
-     * Function for checking the argument count of given input
-     *
-     * @param exps = given input
-     * @return (int) number of arguments.
-     */
-    private int noOfArgument(String exps) {
-        int _count = 0;
-        boolean flag = true;
-        for (int i = 0; i < exps.length(); i++) {
-            if (Character.isUpperCase(exps.charAt(i)) && flag) {
-                _count++;
-            } else if (Character.isLowerCase(exps.charAt(i))) {
-                if (exps.charAt(i + 1) == '(') {
-                    if (Character.isLowerCase(exps.charAt(i + 2))) {
-                        flag = false;
-                        break;
-                    }
-                } else {
-                    _count++;
-                }
-            } else if (exps.charAt(i) == ')') {
-                flag = true;
-                if (i < exps.length()) {
-                    if (exps.charAt(i + 1) == ',' || exps.charAt(i + 1) == ')') {
-                        _count++;
-                    }
-                }
-                break;
-            }
-        }
-        return _count;
-    }
+    
 
     /**
      * @param args the command line arguments
@@ -111,17 +80,25 @@ public class AI_Assignment_1 {
         //String[] expr2=saparateExpression(exper2);
         //boolean ans=ai.unification(expr1, expr2);
         ai.saparateExpressions(exper1,exper2);
-        System.out.println("The ans of unification is: "+ai.unification());
-        if(ai.unification())
+        boolean ans_of_unification=ai.unification();
+        System.out.println("The ans of unification is: "+ans_of_unification);
+        if(ans_of_unification){
             System.out.println("Solutions:\n");
-            for (Map.Entry<String, String> entry : ai.resultMap.entrySet()) {
+            ai.resultMap.entrySet().forEach((entry) -> {
                 System.out.println(entry.getKey() + ":" + entry.getValue());
+            });
+        }else{
+            if(ai.failed_due_to_occurance){
+                System.out.println("Unification failed due to occurs check!");
+            }else if(ai.failed_due_to_syntax){
+                System.out.println("Unification failed due to syntax error!");
             }
+        }
     }
 
     private boolean unification() {
         System.out.println("Unification started!!");
-        while (!expression1.isEmpty() && !expression2.isEmpty()) {
+        while (!expression1.isEmpty() && !expression2.isEmpty()&&!failed_due_to_occurance) {
             System.out.println("inside while");
             char var1 = expression1.peek();
             char var2 = expression2.peek();
@@ -145,9 +122,13 @@ public class AI_Assignment_1 {
             }
         }
         if (!expression1.isEmpty() || !expression2.isEmpty()) {
+            failed_due_to_syntax=true;
             return false;
         }
-        return true;
+        if(failed_due_to_occurance)
+            return false;
+        else
+            return true;
     }
 
     void pop_Stack() {
@@ -164,36 +145,58 @@ public class AI_Assignment_1 {
                 break;
             case 2:
                 tempValue=tempValue+expression2.pop();
-                if(expression2.peek()=='('){
-                    System.out.println("expression 2 peek"+expression2.peek());
-                    while(!expression2.isEmpty()&&expression2.peek()!=')'){
-                        System.out.println("solutions peek"+expression2.peek());
-                        tempValue=tempValue+expression2.pop();
-                        System.out.println("tempvalue"+tempValue);                       
+                if (!expression2.isEmpty()) {
+                    if (expression2.peek() == '(') {
+                        System.out.println("expression 2 peek" + expression2.peek());
+                        while (!expression2.isEmpty() && expression2.peek() != ')') {
+                            System.out.println("solutions peek" + expression2.peek());
+                            tempValue = tempValue + expression2.pop();
+                            System.out.println("tempvalue" + tempValue);
+                        }
+                        tempValue = tempValue + expression2.pop();
+                        System.out.println("tempvalue" + tempValue);
                     }
-                    tempValue=tempValue+expression2.pop();
-                    System.out.println("tempvalue"+tempValue);
                 }
                 System.out.println("final rsult:"+expression1.peek()+":"+tempValue);
-                resultMap.put(expression1.pop().toString(),tempValue);
-                search_For_Subsitution();
+                /**
+                 * occurs check here.
+                 */
+                String unified_Value=expression1.pop().toString();
+                if(!tempValue.contains(unified_Value)){
+                    resultMap.put(unified_Value,tempValue);
+                    search_For_Subsitution();
+                }else{
+                    failed_due_to_occurance=true;
+                }
+                
                 break;
             case 3:
                 tempValue=tempValue+expression1.pop();
                 System.out.println("peek"+expression1.peek());
-                if(expression1.peek()=='('){
-                    System.out.println("expression 1 peek"+expression1.peek());
-                    while(!expression1.isEmpty()&&expression1.peek()!=')'){
-                        System.out.println("solutions peek"+expression1.peek());
-                        tempValue=tempValue+expression1.pop();
-                        System.out.println("tempvalue"+tempValue);                        
+                if (!expression1.isEmpty()) {
+                    if (expression1.peek() == '(') {
+                        System.out.println("expression 1 peek" + expression1.peek());
+                        while (!expression1.isEmpty() && expression1.peek() != ')') {
+                            System.out.println("solutions peek" + expression1.peek());
+                            tempValue = tempValue + expression1.pop();
+                            System.out.println("tempvalue" + tempValue);
+                        }
+                        tempValue = tempValue + expression1.pop();
+                        System.out.println("tempvalue" + tempValue);
                     }
-                    tempValue=tempValue+expression1.pop();
-                    System.out.println("tempvalue"+tempValue);
                 }
                 System.out.println("final rsult:"+expression2.peek()+":"+tempValue);
-                resultMap.put(tempValue,expression2.pop().toString());
-                search_For_Subsitution();
+                /**
+                 * occurs check here.
+                 */
+                unified_Value=expression1.pop().toString();
+                if(!tempValue.contains(unified_Value)){
+                    resultMap.put(tempValue,expression2.pop().toString());
+                    search_For_Subsitution();
+                }else{
+                    failed_due_to_occurance=true;
+                }
+                
                 break;
                 
             default:
@@ -203,10 +206,8 @@ public class AI_Assignment_1 {
     }
 
     private void search_For_Subsitution() {
-        boolean firstOccurance=true;
         System.out.println("exper1:"+Arrays.asList(expression1));
-        for (String subsituteValue : resultMap.keySet()) {
-            
+        resultMap.keySet().forEach((subsituteValue) -> {
             int position = expression1.search(subsituteValue.charAt(0));
             System.out.println("substitute value"+subsituteValue+" Position:"+position);
             if (position != -1) {
@@ -217,8 +218,7 @@ public class AI_Assignment_1 {
                     expression1.insertElementAt(substitution, expression1.size()-position+1);
                 }
             }
-            firstOccurance=false;
-        }
+        });
         System.out.println("exper1:"+Arrays.asList(expression1));
     }
 
