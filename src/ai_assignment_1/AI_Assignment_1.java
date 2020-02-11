@@ -284,38 +284,44 @@ public class AI_Assignment_1 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
+        char continue_check = 'y';
+        String exper1,exper2;
         Scanner sc = new Scanner(System.in);
-        System.out.println("Please enter Expr1:");
-        String exper1 = sc.nextLine();
-        System.out.println("Please enter Expr2:");
-        String exper2 = sc.nextLine();
+        while (continue_check == 'y') {
+            System.out.println("Please enter Expression 1:");
+            exper1 = sc.nextLine();
+            System.out.println("Please enter Expression 2:");
+            exper2 = sc.nextLine();
 
-        AI_Assignment_1 ai = new AI_Assignment_1();
+            AI_Assignment_1 ai = new AI_Assignment_1();
 
-        ai.saparateExpressions(exper1, exper2);
+            ai.saparateExpressions(exper1, exper2);
 
-        boolean ans_of_unification = ai.unification();
+            boolean ans_of_unification = ai.unification();
 
-        System.out.println("The ans of unification is: " + ans_of_unification);
+            System.out.println("\nThe ans of unification is: " + ans_of_unification);
 
-        if (ans_of_unification) {
-            System.out.println("Experssion 1 and 2 are unifiable");
-        } else {
-            System.out.println("Experssion 1 and 2 are not unifiable");
-        }
-        if (ans_of_unification) {
-            ai.replace_In_Results();
-            System.out.println("\nSolutions:");
-            for (String entry : ai.resultMap.keySet()) {
-                System.out.println(entry + ":" + ai.resultMap.get(entry));
+            if (ans_of_unification) {
+                System.out.println("\nExperssion 1 and 2 are unifiable");
+            } else {
+                System.out.println("\nExperssion 1 and 2 are not unifiable");
             }
-        } else {
-            if (ai.failed_due_to_occurance) {
-                System.out.println("\nUnification failed due to occurs check!");
-            } else if (ai.failed_due_to_syntax) {
-                System.out.println("\nUnification failed due to syntax error!");
+            if (ans_of_unification) {
+                ai.replace_In_Results();
+                System.out.println("\nSolutions:");
+                for (String entry : ai.resultMap.keySet()) {
+                    System.out.println(entry + ":" + ai.resultMap.get(entry));
+                }
+            } else {
+                if (ai.failed_due_to_occurance) {
+                    System.out.println("\nUnification failed due to occurs check!");
+                } else if (ai.failed_due_to_syntax) {
+                    System.out.println("\nUnification failed due to syntax error!");
+                }
             }
+            System.out.println("Do you want to continue?(y/n)");
+            continue_check = sc.nextLine().charAt(0);
+            System.out.println("\n");
         }
     }
 
